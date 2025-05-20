@@ -1,0 +1,7 @@
+.env
+jobs.db
+logs/
+scheduler_env/
+ai_inference_env/
+__pycache__/
+.pytest_cache/

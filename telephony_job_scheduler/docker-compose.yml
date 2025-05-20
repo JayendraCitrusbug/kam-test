@@ -1,0 +1,21 @@
+# docker-compose.yml
+
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"  # HTTP and WebSocket both run on this port
+      - "8001:8000"  # Optional additional exposed port mapped to same internal port
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./jobs.db
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
