@@ -24,7 +24,7 @@ def test_inference_success():
         json={"text": "hello"},
     )
     assert response.status_code == 200
-    assert response.json() == {"result": "olleh"}
+    assert response.json().get("data") == {"result": "olleh"}
 
 
 def test_inference_auth_failure_invalid_token():

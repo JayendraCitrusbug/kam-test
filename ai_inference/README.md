@@ -14,10 +14,11 @@ docker run -d -p 8080:8080 --name ai-inference-container ai-inference-app
 ```
 
 ## AI Inference API
-Make a call to the AI Inference API by sending a POST request to the /infer/ endpoint.
 
 📘 **API Documentation:**
 Visit [http://127.0.0.1:8080/docs](http://127.0.0.1:8080/docs) for the interactive Swagger UI.
+
+Make a call to the AI Inference API by sending a `POST` request to the /infer/ endpoint.
 
 📤 **Sample Payload:**
 ```json
@@ -28,18 +29,37 @@ Visit [http://127.0.0.1:8080/docs](http://127.0.0.1:8080/docs) for the interacti
 
 You will receive the inferred output in the response.
 
----
+**Authentication**
 
-## Authentication
+Make a call to the AI Inference API by sending a `GET` request to the /infer/token/ endpoint.
 
-Make a call to the AI Inference API by sending a GET request to the /infer/token/ endpoint.
-You will receive a token in the response data. Use this token to authorize your API calls.
+You will receive a `token` in the response data. Use this token to authorize your API calls.
 
 ---
 
 ## Test Cases
 
-To run the test cases, execute:
+To run the test cases:
+
+1. Create a virtual environment:
+```bash
+python -m venv venv
+pip install -r requirements.txt
+```
+
+2. Activate the virtual environment:
+
+- On Windows:
+```bash
+venv\Scripts\activate
+```
+
+- On macOS/Linux:
+```bash
+source venv/bin/activate
+```
+
+3. Execute below command:
 ```bash
 pytest
 ```
