@@ -1,4 +1,3 @@
-from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
@@ -8,9 +7,8 @@ class AppSettings(BaseSettings):
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./jobs.db"
 
-    REDIS_HOST: str = "localhost"
+    REDIS_HOST: str = "host.docker.internal"
     REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
 
     class Config:
         env_file = ".env"

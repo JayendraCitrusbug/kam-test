@@ -15,6 +15,17 @@ class JobSchedulerService:
         self.pubsub = RedisPubSubService()
 
     async def _publish_job_status(self, job: Job, status: str, message: str):
+        """
+        Publishes the status of a job to connected websocket clients.
+
+        Args:
+            job (Job): The job to publish the status of.
+            status (str): The status of the job, e.g. "scheduled", "in_progress", "completed", "failed", or "cancelled".
+            message (str): The message to include with the job status update.
+
+        Returns:
+            None
+        """
         await self.pubsub.publish_updates(
             data_type=WebsocketMessageTypesEnum.job_status,
             data={
@@ -38,6 +49,22 @@ class JobSchedulerService:
         )
 
     async def schedule_job(self, job_data: CreateJobRequestDTO) -> JobResponseDTO:
+        """
+        Schedules a new job by storing it in the database, publishing its initial status,
+        and adding it to the processing queue.
+
+        Args:
+            job_data (CreateJobRequestDTO): The data required to create a new job,
+            including job name, phone number, and schedule time.
+
+        Returns:
+            JobResponseDTO: A data transfer object containing the details of the scheduled job.
+
+        Raises:
+            Exception: If an error occurs during the job scheduling process,
+            the transaction is rolled back and the exception is raised.
+        """
+
         try:
             job = Job(
                 id=str(uuid4()),

@@ -22,6 +22,16 @@ class RedisPubSubService:
         self.channel = "public_channel"
 
     async def redis_listener(self):
+        """
+        Listens for Redis messages on the configured channel and broadcasts
+        received messages to all active WebSocket connections.
+
+        This method is intended to be run in a separate task as it runs an
+        infinite loop. If the listener is stopped for any reason, it will
+        attempt to reconnect and resume broadcasting messages.
+
+        :raises: Any exceptions raised during the execution of this method
+        """
         pubsub = self.redis_conn.pubsub()
         await pubsub.subscribe(self.channel)
 
@@ -68,6 +78,26 @@ class RedisPubSubService:
         data_type: WebsocketMessageTypesEnum,
         data: Dict[str, Any],
     ):
+        """
+        Publishes updates to a Redis channel with the specified data type and data.
+
+        This method serializes the given data into JSON format, using a custom
+        serializer for handling enum values and datetime objects, and publishes
+        it to the Redis channel.
+
+        Args:
+            data_type (WebsocketMessageTypesEnum): The type of message being
+                published, corresponding to an enum value that identifies the
+                message category.
+            data (Dict[str, Any]): The data payload to be included in the message,
+                which will be serialized to JSON.
+
+        Raises:
+            TypeError: If an object within the data is not JSON serializable.
+            Exception: If there is an error during the publishing of the message,
+                which is logged with an exception message.
+        """
+
         def default_serializer(obj):
             if hasattr(obj, "value"):  # For enum values
                 return obj.value

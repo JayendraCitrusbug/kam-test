@@ -19,11 +19,40 @@ class JobWorkerService:
         self.failed_jobs: Dict[str, int] = {}
 
     async def _publish_status(self, message: dict):
+        """
+        Publishes a job status message to all connected websocket clients.
+
+        Args:
+            message (dict): A dictionary containing the job status message to be
+                published. The dictionary must contain the following keys:
+                    - job_id (str): The ID of the job.
+                    - status (str): The status of the job, e.g. "scheduled",
+                        "in_progress", "completed", "failed", or "cancelled".
+                    - message (str): A message to include with the job status
+                        update.
+                    - job_details (dict): A dictionary containing additional
+                        details about the job, such as its name, phone number,
+                        schedule time, created_at, and updated_at timestamps.
+
+        Returns:
+            None
+        """
         await self.pubsub.publish_updates(
             data_type=WebsocketMessageTypesEnum.job_status, data=message
         )
 
     async def _update_job_status(self, job_id: str, status: str):
+        """
+        Update the status of a job in the database.
+
+        Args:
+            job_id (str): The ID of the job to update.
+            status (str): The new status to set for the job.
+
+        Returns:
+            Job: The updated job object, if the job was found, otherwise None.
+        """
+
         result = await self.db.execute(select(Job).where(Job.id == job_id))
         job = result.scalars().first()
 
@@ -36,6 +65,24 @@ class JobWorkerService:
         return None
 
     async def _process_job(self, job_data: dict):
+        """
+        Processes a job by updating its status, simulating work, and publishing status updates.
+
+        This function executes the job processing workflow including:
+        - Checking job existence in the database.
+        - Delaying execution until the scheduled time if necessary.
+        - Updating the job status to 'IN_PROGRESS' and publishing the status.
+        - Simulating job processing.
+        - Marking the job as 'COMPLETED' and publishing the status.
+        - Handling retries and failure status updates if an exception occurs.
+
+        Args:
+            job_data (dict): A dictionary containing job data including the job ID.
+
+        Raises:
+            Exception: If an error occurs during job processing, it is handled for retry up to 3 times.
+        """
+
         job_id = job_data["id"]
         try:
             result = await self.db.execute(select(Job).where(Job.id == job_id))
@@ -139,7 +186,20 @@ class JobWorkerService:
                     del self.active_jobs[job_id]
 
     async def run(self):
-        # Start the monitoring task
+        """
+        Runs the job worker service, continuously processing jobs from the queue.
+
+        This function starts a monitoring task to handle stuck jobs and enters an
+        infinite loop to dequeue and process jobs asynchronously. Jobs are processed
+        in separate tasks and tracked in an active jobs dictionary. Completed jobs
+        are skipped. In case of cancellation, it handles graceful shutdown by
+        canceling active jobs and the monitoring task.
+
+        Raises:
+            asyncio.CancelledError: If the task is cancelled, triggering shutdown.
+            Exception: Propagates any unexpected errors during execution.
+        """
+
         monitor_task = asyncio.create_task(self._monitor_active_jobs())
 
         try:

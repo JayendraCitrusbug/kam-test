@@ -9,14 +9,26 @@ class RedisQueue:
         self.redis = Redis(host=app_settings.REDIS_HOST, decode_responses=True)
 
     async def enqueue(self, job_data: dict) -> None:
+        """Enqueue a job to the Redis queue
+
+        Args:
+            job_data (dict): a dictionary containing job data
+
+        Returns:
+            None
+        """
         await self.redis.rpush(self.queue_name, json.dumps(job_data))
 
     async def dequeue(self) -> dict | None:
+        """Dequeue a job from the Redis queue
+
+        Returns:
+            dict | None: a dictionary containing job data or None if the queue is empty
+        """
+
         job_json = await self.redis.lpop(self.queue_name)
         return json.loads(job_json) if job_json else None
 
-    async def size(self) -> int:
-        return await self.redis.llen(self.queue_name)
-
     async def close(self):
+        """Close the connection to Redis"""
         await self.redis.close()

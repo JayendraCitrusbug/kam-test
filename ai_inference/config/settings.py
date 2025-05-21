@@ -1,15 +1,13 @@
-from pydantic import BaseSettings
-from dotenv import load_dotenv
-
-load_dotenv()  # Load from .env file at root
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    jwt_secret: str = "mocksecret"
-    jwt_algorithm: str = "HS256"
+    JWT_SECRET: str = "mocksecret"
+    JWT_ALGORITHM: str = "HS256"
 
     class Config:
         env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()

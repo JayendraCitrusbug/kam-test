@@ -11,6 +11,12 @@ AsyncSessionLocal = sessionmaker(
 
 
 async def get_db():
+    """
+    Dependency to get a database session.
+
+    Yields a session object that should be used as a dependency
+    in a FastAPI path operation function.
+    """
     async with AsyncSessionLocal() as session:
         yield session
 

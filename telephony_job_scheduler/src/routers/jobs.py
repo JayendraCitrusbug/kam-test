@@ -16,7 +16,21 @@ async def schedule_job(
     job_request: CreateJobRequestDTO,
     db: Session = Depends(get_db),
 ):
-    print("job req -- ", job_request)
+    """
+    Schedule a new job by storing it in the database, publishing its initial status,
+    and adding it to the processing queue.
+
+    Args:
+        job_request (CreateJobRequestDTO): The data required to create a new job,
+            including job name, phone number, and schedule time.
+
+    Returns:
+        JobResponseDTO: A data transfer object containing the details of the scheduled job.
+
+    Raises:
+        HTTPException: If an error occurs during the job scheduling process,
+            the transaction is rolled back and the exception is raised.
+    """
     # Validate schedule_time is in the future
     if job_request.schedule_time <= datetime.utcnow():
         raise HTTPException(

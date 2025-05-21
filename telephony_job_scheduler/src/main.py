@@ -39,6 +39,16 @@ app.include_router(websocket.router)
 @app.on_event("startup")
 async def startup_event():
     # Create DB tables
+    """
+    Called on application startup.
+
+    Performs the following tasks:
+
+    1. Creates all database tables.
+    2. Starts the Redis listener.
+    3. Starts the job worker.
+    """
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -63,6 +73,19 @@ async def shutdown_event():
 
 # Dependency for JobSchedulerService
 async def get_job_scheduler_service(db: AsyncSession = Depends(get_db)):
+    """
+    Dependency to get an instance of JobSchedulerService.
+
+    This dependency will be used in path operations that require an instance of JobSchedulerService.
+    It creates a RedisQueue instance and returns an instance of JobSchedulerService with the current database session
+    and the RedisQueue instance.
+
+    Args:
+        db (AsyncSession): The current database session. Defaults to Depends(get_db).
+
+    Returns:
+        JobSchedulerService: An instance of JobSchedulerService.
+    """
     queue = RedisQueue()
     return JobSchedulerService(db, queue)
 

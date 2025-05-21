@@ -13,6 +13,20 @@ def infer(
     request: InferenceRequest,
     credentials: HTTPAuthorizationCredentials = Depends(auth_scheme),
 ):
+    """
+    Perform inference on the given text by reversing it.
+
+    Args:
+        request (InferenceRequest): The input text to be processed.
+        credentials (HTTPAuthorizationCredentials): The JWT token to authorize the request.
+
+    Returns:
+        InferenceResponse: The reversed version of the input text.
+
+    Raises:
+        HTTPException: If the token is invalid.
+    """
+
     try:
         decode_token(credentials.credentials)
     except Exception:

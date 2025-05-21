@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class CreateJobRequestDTO(BaseModel):
-    job_name: str
+    job_name: str = Field(..., example="Twilio Job")
     phone_number: str = Field(..., example="+1234567890")
     schedule_time: datetime = Field(..., example="2025-05-20 12:00")
 
