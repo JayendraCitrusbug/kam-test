@@ -1,6 +1,4 @@
 from enum import Enum
-from pydantic import BaseModel
-from datetime import datetime
 
 
 class WebsocketMessageTypesEnum(str, Enum):

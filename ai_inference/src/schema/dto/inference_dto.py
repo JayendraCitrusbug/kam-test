@@ -7,3 +7,7 @@ class InferenceRequest(BaseModel):
 
 class InferenceResponse(BaseModel):
     result: str
+
+
+class InferenceTokenResponse(BaseModel):
+    token: str

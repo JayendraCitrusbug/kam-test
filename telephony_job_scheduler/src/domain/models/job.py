@@ -1,15 +1,9 @@
 from datetime import datetime
-from enum import Enum as PyEnum
-from sqlalchemy import Column, String, Enum, DateTime
+
+from sqlalchemy import Column, DateTime, Enum, String
+
 from infrastructure.database.db import Base
-
-
-class JobStatus(PyEnum):
-    SCHEDULED = "SCHEDULED"
-    IN_PROGRESS = "IN_PROGRESS"
-    COMPLETED = "COMPLETED"
-    FAILED = "FAILED"
-    CANCELLED = "CANCELLED"
+from src.domain.enums import JobStatus
 
 
 class Job(Base):

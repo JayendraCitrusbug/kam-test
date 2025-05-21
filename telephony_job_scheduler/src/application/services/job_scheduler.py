@@ -1,11 +1,18 @@
-from uuid import uuid4
+import logging
 from datetime import datetime
+from uuid import uuid4
+
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.domain.models.job import Job, JobStatus
-from src.application.dto.job_dto import CreateJobRequestDTO, JobResponseDTO
+
 from infrastructure.redis.redis_queue import RedisQueue
 from infrastructure.websockets.redis_pubsub import RedisPubSubService
+from src.application.dto.job_dto import CreateJobRequestDTO, JobResponseDTO
 from src.application.dto.websocket_dto import WebsocketMessageTypesEnum
+from src.domain.enums import JobStatus
+from src.domain.models.job import Job
+
+logger = logging.getLogger(__name__)
 
 
 class JobSchedulerService:
@@ -75,7 +82,6 @@ class JobSchedulerService:
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )
-
             self.db.add(job)
             await self.db.commit()
             await self.db.refresh(job)
@@ -106,5 +112,6 @@ class JobSchedulerService:
                 updated_at=job.updated_at,
             )
         except Exception as e:
+            logger.error(f"Error scheduling job: {e}")
             await self.db.rollback()
-            raise e
+            raise HTTPException(status_code=500, detail=f"Error: {e}")

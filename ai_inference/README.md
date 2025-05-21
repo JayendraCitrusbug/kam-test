@@ -32,29 +32,8 @@ You will receive the inferred output in the response.
 
 ## Authentication
 
-1. Create a virtual environment:
-```bash
-python -m venv venv
-pip install -r requirements.txt
-```
-
-2. Activate the virtual environment:
-
-- On Windows:
-```bash
-venv\Scripts\activate
-```
-
-- On macOS/Linux:
-```bash
-source venv/bin/activate
-```
-
-3. Generate a JWT token by running:
-```bash
-python generate_token.py
-```
-Use this token to authorize your API calls.
+Make a call to the AI Inference API by sending a GET request to the /infer/token/ endpoint.
+You will receive a token in the response data. Use this token to authorize your API calls.
 
 ---
 

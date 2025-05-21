@@ -1,4 +1,5 @@
 import jwt
+from fastapi import HTTPException
 from config.settings import settings
 
 
@@ -33,5 +34,7 @@ def decode_token(token: str) -> dict:
         jwt.exceptions.ExpiredSignatureError: If the token has expired.
         jwt.exceptions.InvalidTokenError: If the token is invalid for other reasons.
     """
-
-    return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+    try:
+        return jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")

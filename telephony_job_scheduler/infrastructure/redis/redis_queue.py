@@ -1,5 +1,7 @@
 import json
+
 from redis.asyncio import Redis
+
 from config.settings import app_settings
 
 
@@ -28,7 +30,3 @@ class RedisQueue:
 
         job_json = await self.redis.lpop(self.queue_name)
         return json.loads(job_json) if job_json else None
-
-    async def close(self):
-        """Close the connection to Redis"""
-        await self.redis.close()

@@ -1,12 +1,18 @@
 import asyncio
+import logging
 from datetime import datetime
 from typing import Dict, List
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from infrastructure.redis.redis_queue import RedisQueue
 from infrastructure.websockets.redis_pubsub import RedisPubSubService
-from src.domain.models.job import Job, JobStatus
 from src.application.dto.websocket_dto import WebsocketMessageTypesEnum
+from src.domain.enums import JobStatus
+from src.domain.models.job import Job
+
+logger = logging.getLogger(__name__)
 
 
 class JobWorkerService:
@@ -181,7 +187,7 @@ class JobWorkerService:
             for job_id, task in list(self.active_jobs.items()):
                 if task.done():
                     if task.exception():
-                        print(f"Job {job_id} failed: {task.exception()}")
+                        logger.error("Job %s failed: %s", job_id, task.exception())
                         # Handle the failed job (could requeue it)
                     del self.active_jobs[job_id]
 

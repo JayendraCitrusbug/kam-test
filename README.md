@@ -20,7 +20,7 @@ To test **Telephony‑Job Scheduler Service**, navigate to the corresponding fol
 cd telephony_job_scheduler
 ```
 
-Refer to the [telephony_job_scheduler/README.md](./telephony_job_scheduler/README.md) for build, run, and test instructions.
+Refer to the [this](./telephony_job_scheduler/README.md) for build, run, and test instructions.
 
 
 ## Exercise B: Secure AI‑Inference API
@@ -31,4 +31,4 @@ To test Secure AI‑Inference API, navigate to the corresponding folder:
 cd ai_inference
 ```
 
-Refer to the [ai_inference/README.md](./ai_inference/README.md) for build, run, and test instructions.
+Refer to the [this](./ai_inference/README.md) for build, run, and test instructions.

@@ -1,12 +1,18 @@
 # ---- Base Stage ----
-FROM python:3.11-slim AS builder
+FROM python:3.11-alpine AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+# Install build dependencies for packages like cryptography and httptools
+RUN apk add --no-cache \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    musl-dev \
+    python3-dev \
+    cargo \
+    py3-pip
 
 WORKDIR /app
 
@@ -15,17 +21,23 @@ RUN pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
 # ---- Final Stage ----
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
+
+# Only runtime dependencies (if any)
+RUN apk add --no-cache \
+    libffi \
+    openssl \
+    py3-pip
 
 WORKDIR /app
 
 COPY --from=builder /usr/local /usr/local
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl --fail http://localhost:8080/health || exit 1

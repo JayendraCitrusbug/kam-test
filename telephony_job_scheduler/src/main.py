@@ -1,19 +1,20 @@
 import asyncio
 import logging
 
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config.logging import setup_logging
 from config.settings import app_settings
-from infrastructure.database.db import Base, engine
-from src.routers import jobs, websocket
-from infrastructure.websockets.redis_pubsub import RedisPubSubService
+from infrastructure.database.db import Base, engine, get_db
 from infrastructure.redis.redis_queue import RedisQueue
-from src.application.services.job_worker import JobWorkerService
-from infrastructure.database.db import get_db
+from infrastructure.websockets.redis_pubsub import RedisPubSubService
 from src.application.services.job_scheduler import JobSchedulerService
+from src.application.services.job_worker import JobWorkerService
+from src.routers import jobs, websocket
 
+setup_logging()
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
