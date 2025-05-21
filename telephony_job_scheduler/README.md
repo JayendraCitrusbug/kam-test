@@ -60,6 +60,7 @@ These updates are broadcast in real time using Redis Pub/Sub and WebSocket.
 
 ## Notes
 
+- SQLite database is used for storing jobs.
 - Redis is used for both background job queuing and pub/sub communication.
 - Jobs are processed and updated through the `JobWorkerService`.
 - WebSocket clients receive real-time job updates using `ConnectionManager`.
